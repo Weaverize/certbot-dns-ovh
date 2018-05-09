@@ -17,6 +17,6 @@ You should use an OVH account that has the corresponding rights, obviously.
 # Running container
 The current POC ask for manual inputs, it will be made fully automatic later on (PR Welcomed ;) )
 
-```docker run -it --rm -v $PWD/certs:/etc/letsencrypt -v $PWD/lib:/var/lib/letsencrypt -e OVH_APPLICATION_KEY=<replace by key> -e OVH_APPLICATION_SECRET=<replace by secret> -e OVH_CONSUMER_KEY=<replace by consumer key> certbot-dns-ovh```
+```docker run -it --rm -v $PWD/certs:/etc/letsencrypt -v $PWD/lib:/var/lib/letsencrypt -e OVH_APPLICATION_KEY=<replace by key> -e OVH_APPLICATION_SECRET=<replace by secret> -e OVH_CONSUMER_KEY=<replace by consumer key> certbot-dns-ovh certonly --agree-tos --no-eff-email -a certbot-dns-ovh:dns-ovh ```
 
 To be able to create wildcard certificates the script uses https://acme-v02.api.letsencrypt.org/directory endpoint.

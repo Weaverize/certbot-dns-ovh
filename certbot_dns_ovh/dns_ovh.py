@@ -28,17 +28,22 @@ class Authenticator(dns_common.DNSAuthenticator):
 
     description = ("Obtain certificates using a DNS TXT record (if you are using OVH DNS).")
 	
-    client = ovh.Client()
-
     def __init__(self, *args, **kwargs):
         super(Authenticator, self).__init__(*args, **kwargs)
-        self._attempt_cleanup = False
+    	self.client = ovh.Client()
+
+    @classmethod
+    def add_parser_arguments(cls, add):  # pylint: disable=arguments-differ
+        super(Authenticator, cls).add_parser_arguments(add, default_propagation_seconds=60)
 
     def more_info(self):  # pylint: disable=missing-docstring,no-self-use
         return "Solve a DNS01 challenge using OVH DNS"
 
     def get_chall_pref(self, unused_domain):  # pylint: disable=missing-docstring,no-self-use
         return [challenges.DNS01]
+
+    def _setup_credentials(self):
+		pass
 
     def _perform(self, domain, validation_domain_name, validation): # pylint: disable=missing-docstring
         """
@@ -62,15 +67,15 @@ class Authenticator(dns_common.DNSAuthenticator):
                     subdomain += ndd[i]
                 else:
                     subdomain += ndd[i] + "."
-        id_record = client.post('/domain/zone/%s/record' % basedomain,
+        self.id_record = self.client.post('/domain/zone/%s/record' % basedomain,
                                 fieldType="TXT",
                                 subDomain=subdomain,
                                 ttl=0,
                                 target=token)
-        print (str(id_record["id"]))
+        print (str(self.id_record["id"]))
         self.client.post('/domain/zone/%s/refresh' % basedomain)
         time.sleep(5)
-        return id_record["id"]
+        return self.id_record["id"]
 
     def _cleanup(self, domain, validation_domain_name, validation):
         """
@@ -82,10 +87,10 @@ class Authenticator(dns_common.DNSAuthenticator):
         :param str validation_domain_name: The validation record domain name.
         :param str validation: The validation record content.
         """
-        id_record = os.environ['CERTBOT_AUTH_OUTPUT']
-        client = ovh.Client()
-        ndd = os.environ['CERTBOT_DOMAIN']
+    	print(str(validation))
+        #id_record = os.environ['CERTBOT_AUTH_OUTPUT']
+        ndd = domain
         ndd = ndd.split(".")
         basedomain = ndd[len(ndd)-2] + "." + ndd[len(ndd)-1]
-        client.delete('/domain/zone/%s/record/%s' % (basedomain, id_record))
-        client.post('/domain/zone/%s/refresh' % basedomain)
+        self.client.delete('/domain/zone/%s/record/%s' % (basedomain, self.id_record))
+        self.client.post('/domain/zone/%s/refresh' % basedomain)

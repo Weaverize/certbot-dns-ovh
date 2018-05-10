@@ -31,6 +31,7 @@ class Authenticator(dns_common.DNSAuthenticator):
     def __init__(self, *args, **kwargs):
         super(Authenticator, self).__init__(*args, **kwargs)
     	self.client = ovh.Client()
+    	self.responses = {}
 
     @classmethod
     def add_parser_arguments(cls, add):  # pylint: disable=arguments-differ
@@ -43,6 +44,14 @@ class Authenticator(dns_common.DNSAuthenticator):
         return [challenges.DNS01]
 
     def _setup_credentials(self):
+		"""
+		This Authenticator requires an ovh.conf file or the following environment variables
+		OVH_ENDPOINT
+		OVH_APPLICATION_KEY
+		OVH_APPLICATION_SECRET
+		OVH_CONSUMER_KEY
+		Corresponding Documentation can be found on https://github.com/ovh/python-ovh#2-configure-your-application
+		"""
 		pass
 
     def _perform(self, domain, validation_domain_name, validation): # pylint: disable=missing-docstring
@@ -67,15 +76,15 @@ class Authenticator(dns_common.DNSAuthenticator):
                     subdomain += ndd[i]
                 else:
                     subdomain += ndd[i] + "."
-        self.id_record = self.client.post('/domain/zone/%s/record' % basedomain,
+        id_record = self.client.post('/domain/zone/%s/record' % basedomain,
                                 fieldType="TXT",
                                 subDomain=subdomain,
                                 ttl=0,
                                 target=token)
-        print (str(self.id_record["id"]))
+        self.responses[validation] = id_record["id"]
         self.client.post('/domain/zone/%s/refresh' % basedomain)
         time.sleep(5)
-        return self.id_record["id"]
+        return id_record["id"]
 
     def _cleanup(self, domain, validation_domain_name, validation):
         """
@@ -87,10 +96,9 @@ class Authenticator(dns_common.DNSAuthenticator):
         :param str validation_domain_name: The validation record domain name.
         :param str validation: The validation record content.
         """
-    	print(str(validation))
-        #id_record = os.environ['CERTBOT_AUTH_OUTPUT']
         ndd = domain
         ndd = ndd.split(".")
         basedomain = ndd[len(ndd)-2] + "." + ndd[len(ndd)-1]
-        self.client.delete('/domain/zone/%s/record/%s' % (basedomain, self.id_record))
+        self.client.delete('/domain/zone/%s/record/%s' % (basedomain,  self.responses[validation]))
+    	self.responses.pop(validation, None)
         self.client.post('/domain/zone/%s/refresh' % basedomain)

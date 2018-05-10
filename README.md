@@ -45,8 +45,7 @@ To be able to create wildcard certificates you have to use the following endpoin
 
 `https://acme-v02.api.letsencrypt.org/directory`
 
-# Todo
-A docker image should be made available soon
-
 # Credit
+Inspired by [mcdado/certbot-dns-ovh](https://github.com/mcdado/certbot-dns-ovh) and [antoiner77/letsencrypt.sh-ovh](https://github.com/antoiner77/letsencrypt.sh-ovh)
+
 Copyright (c) 2018, [Weaverize SAS](http://www.weaverize.com). All rights reserved. Contact: <dev@weaverize.com>.

@@ -6,7 +6,9 @@ To build the container simply run the following command:
 
 ```docker build -t certbot-dns-ovh . ```
 
-A ready-made image should be made available soon.
+An official image is also available on docker's hub:
+
+`docker pull weaverize/certbot-dns-ovh`
 
 # Create OVH API Token
 Go to https://api.ovh.com/createToken/ and create an application token with the following rights:
@@ -29,7 +31,7 @@ docker run -it --rm \
 	-e OVH_APPLICATION_KEY=<replace by key> \
 	-e OVH_APPLICATION_SECRET=<replace by secret> \
 	-e OVH_CONSUMER_KEY=<replace by consumer key> \
-	certbot-dns-ovh \
+	weaverize/certbot-dns-ovh \
 		certonly \
 		--server https://acme-v02.api.letsencrypt.org/directory \
 		--preferred-challenges dns-01 \

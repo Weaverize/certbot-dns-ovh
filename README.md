@@ -29,6 +29,7 @@ You can also use environment variables instead like in the following example:
 docker run -it --rm \
 	-v $PWD/certs:/etc/letsencrypt \
 	-v $PWD/lib:/var/lib/letsencrypt \
+	-e OVH_ENDPOINT=<replace by endpoint> \
 	-e OVH_APPLICATION_KEY=<replace by key> \
 	-e OVH_APPLICATION_SECRET=<replace by secret> \
 	-e OVH_CONSUMER_KEY=<replace by consumer key> \

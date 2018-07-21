@@ -2,6 +2,9 @@
 
 Docker container for creating and renewing (wildcard) certificates on OVH DNS
 
+# Deprecated !
+As of Certbot 0.26 an OVH plugin has been included. See official [changelog](https://github.com/certbot/certbot/blob/master/CHANGELOG.md#0260---2018-07-11) on [certbot/certbot](https://github.com/certbot/certbot/).
+
 # Building container
 To build the container simply run the following command:
 
